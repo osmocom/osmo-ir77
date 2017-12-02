@@ -73,6 +73,8 @@ int main(int argc, char *argv[])
 	struct ir77_ambe_decoder *dec = NULL;
 	FILE *fin, *fout;
 	int is_wave = 0, l, rv;
+	int frames_ok = 0, frames_total = 0;
+	float error_ratio = 1.0f;
 
         /* Arguments */
 	if (argc > 3) {
@@ -139,10 +141,13 @@ int main(int argc, char *argv[])
 
 		/* Decompress */
 		rv = ir77_ambe_decode_superframe(dec, audio, 2*360, superframe);
-		if (rv) {
+		if (rv < 0) {
 			fprintf(stderr, "[!] codec error\n");
 			break;
 		}
+
+		frames_ok += rv;
+		frames_total += 2;
 
 		/* Write audio output */
 		for (i=0; i<2*360; i++)
@@ -157,6 +162,10 @@ int main(int argc, char *argv[])
 		/* Keep track of number of samples */
 		l += 2*360;
 	}
+
+	/* Report the frame error ratio */
+	error_ratio = 1.0f - (1.0f * frames_ok) / frames_total;
+	fprintf(stderr, "Error ratio: %.2f\n", error_ratio);
 
 	/* Release decoder */
 	ir77_ambe_decode_release(dec);
@@ -195,5 +204,5 @@ exit:
 	fclose(fin);
 
 	/* All done ! */
-	return 0;
+	return error_ratio < 0.5f ? 0 : 1;
 }

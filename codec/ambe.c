@@ -97,12 +97,12 @@ ir77_ambe_decode_speech(struct ir77_ambe_decoder *dec,
 	return 0;
 }
 
-/*! \brief Decodes an AMBE superframe to audio
+/*! \brief Decodes an AMBE superframe (=2 frames) to audio
  *  \param[in] dec Decoder object
  *  \param[out] audio Output audio buffers
  *  \param[in] N number of audio samples to produce (== 720 for now)
  *  \param[in] superframe SuperFrame data (39 bytes = 312 bits)
- *  \returns 0 for success. Negative error code otherwise.
+ *  \returns Number of successfully decoded frames. Negative error code otherwise.
  */
 int
 ir77_ambe_decode_superframe(struct ir77_ambe_decoder *dec,
@@ -111,7 +111,7 @@ ir77_ambe_decode_superframe(struct ir77_ambe_decoder *dec,
 {
 	ubit_t superframe_bits[312];
 	ubit_t frame_bits[156];
-	int i;
+	int frames = 0, i;
 
 	/* Unpack to ubits */
 	osmo_pbit2ubit_ext(superframe_bits, 0, superframe, 0, 312, 1);
@@ -146,6 +146,8 @@ ir77_ambe_decode_superframe(struct ir77_ambe_decoder *dec,
 			continue;
 		}
 
+		frames++;
+
 		/* De-prioritize */
 		ir77_ambe_prioritize(frame_lin, frame, 1);
 
@@ -170,7 +172,7 @@ ir77_ambe_decode_superframe(struct ir77_ambe_decoder *dec,
 		}
 	}
 
-	return 0;
+	return frames;
 }
 
 /*! @} */
