@@ -25,7 +25,11 @@
  *  \brief Iridium AMBE vocoder ECC routines
  */
 
+#ifdef HAVE_LIBOSMOCORE
 #include <osmocom/core/bits.h>
+#else
+#include "compat_bits.h"
+#endif
 
 #include "ecc_tables.h"
 

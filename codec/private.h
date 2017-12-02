@@ -29,7 +29,11 @@
  *  \brief Iridium AMBE vocoder private header
  */
 
+#ifdef HAVE_LIBOSMOCORE
 #include <osmocom/core/bits.h>
+#else
+#include "compat_bits.h"
+#endif
 
 
 #define AMBE_RATE 8000		/*!< \brief AMBE sample rate (Hz) */

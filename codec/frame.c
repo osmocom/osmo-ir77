@@ -32,8 +32,6 @@
 
 #include <math.h>
 
-#include <osmocom/core/bits.h>
-
 #include "private.h"
 
 
